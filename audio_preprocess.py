@@ -17,4 +17,4 @@ def split_audios_in_directory(export_without_splitting):
                 au.export_audio(audio, i)
 
 
-split_audios_in_directory(False)
+split_audios_in_directory(True)
