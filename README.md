@@ -1,8 +1,8 @@
-#Introduction
+# Introduction
 
 speech_dataset is just a tool to help build speech datasets for neural network training. Its is based on this [tutorial](https://medium.com/@klintcho/creating-an-open-speech-recognition-dataset-for-almost-any-language-c532fb2bc0cf). Its is not fully automated and will require a lot of manual editing. Below is a tutorial for building the speech dataset using this tool. Note that there may be undocumented steps with some pairs of ebooks and audiobooks that the user may need to cover on his own to successfully build a dataset.
 
-#Prerequisites:
+# Prerequisites:
 
 * [Notepad++](https://notepad-plus-plus.org/downloads/)
 * [Calibre](https://calibre-ebook.com/download) (if ebook format is .epub)
@@ -10,9 +10,9 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 * [Audacity](https://www.audacityteam.org/download/)
 * [Aeneas](https://github.com/readbeyond/aeneas/blob/master/wiki/INSTALL.md)
 
-#Steps to creating dataset
+# Steps to creating dataset
 
-##Manual Part
+## Manual Part
 
 1. Download an ebook
 2. Convert the book to `.txt` format
@@ -52,7 +52,7 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 6. place the resulting text files to `speech_dataset/books/speaker_name/book_name/text/original`
 7. place the resulting audio files to `speech_dataset/books/speaker_name/book_name/audio/long`
 	
-##Semi-automated part
+## Semi-automated part
 
 1. In `properties.py` file: set values for `book_chapter_count` and `book_dir` (relative directory of book containing audio and text files)
 2. Preprocess chapters using `chapter_preprocess.py`
@@ -69,7 +69,7 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 11. (optional). If intending to process further audio books: in `properties.py` - adjust `dataset_last_chapter_index` to append future audiobooks to dataset. ***if not set - dataset will be overwritten by the new book***
 12. Before using the dataset for training - remove headers from `metadata.csv`
 
-##Regex notes
+## Regex notes
 1. Page break has split a sentence mid-way
    - *\p{Ll} - unicode lowercase letter that has an uppercase variant*
    - *\p{L} - unicode letter*
