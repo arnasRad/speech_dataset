@@ -1,6 +1,6 @@
 # Introduction
 
-speech_dataset is just a tool to help build speech datasets for neural network training. Its is based on this [tutorial](https://medium.com/@klintcho/creating-an-open-speech-recognition-dataset-for-almost-any-language-c532fb2bc0cf). Its is not fully automated and will require a lot of manual editing. Below is a tutorial for building the speech dataset using this tool. Note that there may be undocumented steps with some pairs of ebooks and audiobooks that the user may need to cover on his own to successfully build a dataset.
+speech_dataset is just a tool to help build speech datasets for neural network training. It's is based on this [tutorial](https://medium.com/@klintcho/creating-an-open-speech-recognition-dataset-for-almost-any-language-c532fb2bc0cf). It's is not fully automated and will require a lot of manual editing. Below is a tutorial for building the speech dataset using this tool. Note that with some pairs of ebooks and audiobooks, there may be undocumented steps that the user may need to cover on his own to successfully build a dataset.
 
 # Prerequisites:
 
