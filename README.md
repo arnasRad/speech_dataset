@@ -14,8 +14,7 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 
 ## Manual Part
 
-1. Download an ebook
-2. Convert the book to `.txt` format
+1. Convert the book to `.txt` format
    - If book format is `.epub`:
      1. open `Calibre`
      2. import the book to convert
@@ -30,27 +29,28 @@ speech_dataset is just a tool to help build speech datasets for neural network t
      4. Click on settings icon next to `Text (Plain)` label
      5. Select `Encoding = UTF-8` and click `OK`
      6. Click `Export`
-3. Manually preprocess .txt file using preferred text editor (I'm using Notepad++); see [Regex notes](#Regex-notes)
+2. Manually preprocess .txt file using preferred text editor (I'm using Notepad++); see [Regex notes](#Regex-notes)
    1. Remove the book introduction and ending parts
       - text must start with start of chapter 1 and end of the last chapter
    2. Make sure that each paragraph is separated by two new lines `\n\n`
-      - replace all triple new lines `\n\n\n` with on new line `\n`
+      - replace all triple new lines `\n\n\n` with one new line `\n`
       - in case there are only one new line between paragraphs - replace all `\n\n` with `\n` and then add additional `\n` after each new line in the file
    3. Remove trailing new lines at the start and end of the file
    4. Check if ebook has any footer explanations
       - search ebook for `*` symbol.
       - if footer explanations found - listen to audio at that part and edit the text so that it matches the audio
    5. there may be foreign language sentences in text that the speaker does not record. Consider manually finding these sentences and edit the text so that it matches audio
-4. preprocess audio files
+3. preprocess audio files
    1. import audio files to Audacity
    2. trim start of audiobook (book introduction, release date etc.)
    3. trim end of audiobook (ending notes, credits etc.)
    4. trim start of each audio (speaker tells what's the section number)
    5. trim end of each audio (silence trimming)
-5. using audacity, split ebook to chapters to match audio files' start and end
+4. split ebook to chapters to match audio files' start and end
    - name each `.txt` file `chapter-index.txt` where `index` is the number of audio matching the text
-6. place the resulting text files to `speech_dataset/books/speaker_name/book_name/text/original`
-7. place the resulting audio files to `speech_dataset/books/speaker_name/book_name/audio/long`
+5. place the resulting files to their corresponding folders
+   - place text files in `speech_dataset/books/speaker_name/book_name/text/original`
+   - place audio files in `speech_dataset/books/speaker_name/book_name/audio/long`
 	
 ## Semi-automated part
 
