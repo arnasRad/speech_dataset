@@ -1,7 +1,8 @@
 import os
 
 import properties
-from utils.aeneas import forced_alignment as fa, text_preprocess as tp
+from aeneas import text_preprocess as tp
+from aeneas import forced_alignment as fa
 from utils import file_utils
 
 
