@@ -1,25 +1,77 @@
+import json
 import os
 
-out_filename = "chapter-%d.txt"
-sub_out_filename = "chapter-%d-%d.txt"
+import properties
 
 
-def write_chapter(out_path, chapter_text, chapter_index, chapter_sub_index=None):
-    os.makedirs(out_path, exist_ok=True)
-
-    if chapter_sub_index is None:
-        with open(os.path.join(out_path, (out_filename % chapter_index)), "w", encoding="utf8") as fw:
-            fw.write(chapter_text)
-    else:
-        with open(os.path.join(out_path, (sub_out_filename % (chapter_index, chapter_sub_index))), "w", encoding="utf8") as fw:
-            fw.write(chapter_text)
+def build_book_dir(book_name):
+    return os.path.join("books", book_name)
 
 
-def read_file(file_path):
+def build_text_dir(book_name):
+    return os.path.join(build_book_dir(book_name), "text")
+
+
+def build_valid_text_dir(book_name):
+    return os.path.join(build_book_dir(book_name), "text", "valid")
+
+
+def build_audio_dir(book_name):
+    return os.path.join(build_book_dir(book_name), "audio")
+
+
+def build_syncmap_dir(book_name):
+    return os.path.join(build_book_dir(book_name), "aeneas_syncmap")
+
+
+def build_audio_path(book_name, chapter_index):
+    return os.path.join(build_audio_dir(book_name), properties.audio_filename.format(chapter_index))
+
+
+def build_text_path(book_name, chapter_index):
+    return os.path.join(build_text_dir(book_name), properties.text_filename.format(chapter_index))
+
+
+def build_valid_text_path(book_name, chapter_index):
+    return os.path.join(build_valid_text_dir(book_name), properties.text_filename.format(chapter_index))
+
+
+def build_syncmap_path(book_name, chapter_index):
+    return os.path.join(build_syncmap_dir(book_name), properties.syncmap_filename.format(chapter_index))
+
+
+def build_dataset_dir():
+    return os.path.join("dataset")
+
+
+def build_dataset_audio_dir():
+    return os.path.join(build_dataset_dir(), "audio")
+
+
+def build_dataset_metadata_path():
+    return os.path.join(build_dataset_dir(), properties.metadata_filename)
+
+
+def build_dataset_audio_path(dataset_chapter_index, sample_index):
+    return os.path.join(build_dataset_audio_dir(), build_dataset_audio_filename(dataset_chapter_index, sample_index))
+
+
+def build_dataset_audio_filename(dataset_chapter_index, sample_index):
+    return properties.dataset_audio_filename.format(dataset_chapter_index, sample_index)
+
+
+def read_file(book_name, chapter_index):
+    file_path = build_text_path(book_name, chapter_index)
     with open(file_path, 'r', encoding='utf-8') as fr:
         return fr.read()
 
 
-def write_file(file_path, text):
-    with open(file_path, 'w', encoding='utf-8') as fw:
+def load_syncmap(book_name, chapter_index):
+    with open(build_syncmap_path(book_name, chapter_index)) as f:
+        return json.loads(f.read())
+
+
+def write_valid_txt_output(book_name, chapter_index, text):
+    file_path = build_valid_text_path(book_name, chapter_index)
+    with open(file_path, "w", encoding="utf-8") as fw:
         fw.write(text)

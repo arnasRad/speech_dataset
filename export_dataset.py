@@ -1,103 +1,95 @@
-from pydub import AudioSegment
-import pandas as pd
-import json
 import os
+
+import pandas as pd
+
 import properties
+from utils import audio_utils as au, file_utils as fu
 
 
-def chapter_is_split(chapter_index):
-    if chapter_index in properties.split_book_chapters:
-        return True
-    return False
+min_fragment_duration_ms = 400
 
 
-def build_file_paths(chapter_index, sub_index=None):
-    if sub_index is None:
-        audio_file_path = os.path.join(properties.book_audio_dir, properties.audio_filename % chapter_index)
-        syncmap_file_path = os.path.join(properties.book_syncmap_dir, properties.syncmap_filename % chapter_index)
-    else:
-        audio_file_path = os.path.join(properties.book_audio_dir,
-                                       properties.audio_sub_filename % (chapter_index, sub_index))
-        syncmap_file_path = os.path.join(properties.book_syncmap_dir,
-                                         properties.syncmap_sub_filename % (chapter_index, sub_index))
-
-    return audio_file_path, syncmap_file_path
-
-
-def build_audio_output_filename(sample_index, chapter_index, sub_index=None):
-    if sub_index is None:
-        dataset_current_chapter_index = properties.dataset_last_chapter_index + chapter_index
-        return properties.dataset_audio_filename % (dataset_current_chapter_index, sample_index)
-    else:
-        dataset_current_chapter_index = properties.dataset_last_chapter_index + chapter_index
-        return properties.dataset_audio_sub_filename % (dataset_current_chapter_index, sub_index, sample_index)
-
-
-def build_syncmap_sentences(audio_book, syncmap):
+def __build_syncmap_sentences(chapter_audio, chapter_syncmap):
     sentences = []
-    for fragment in syncmap['fragments']:
+    for fragment in chapter_syncmap['fragments']:
         start_time = float(fragment['begin']) * 1000
         end_time = float(fragment['end']) * 1000
-        if (end_time - start_time) > 400:
+        if (end_time - start_time) > min_fragment_duration_ms:
             sentences.append({
-                "audio": audio_book[start_time:end_time],
+                "audio": chapter_audio[start_time:end_time],
                 "text": fragment['lines'][0]
             })
     return sentences
 
 
-def build_chapter_dataframe(dataframe, sentences, chapter_index, sub_index=None):
-    # export audio segment
-    for idx, sentence in enumerate(sentences):
-        text = sentence['text'].lower()
-        filename = build_audio_output_filename(idx, chapter_index, sub_index)
-        sentence['audio'].export(os.path.join(properties.dataset_audio_dir, filename), format="wav")
-        dataframe = dataframe.append(pd.DataFrame([{
-            'filename': filename,
-            'text': text,
-            'up_votes': 0,
-            'down_votes': 0,
-            'age': 0,
-            'gender': 'male',
-            'accent': '',
-            'duration': ''
-        }], columns=properties.csv_sample_columns))
+def __export_dataset_audio_sample(audio_sample, dataset_chapter_index, syncmap_fragment_index):
+    audio_sample.export(
+        fu.build_dataset_audio_path(dataset_chapter_index, syncmap_fragment_index),
+        format="wav"
+    )
+
+
+def __append_to_metadata(metadata_df, dataset_chapter_index, fragment_index, fragment_text, fragment_audio):
+    return metadata_df.append(
+            pd.DataFrame(
+                [{
+                    'filename': fu.build_dataset_audio_filename(dataset_chapter_index, fragment_index),
+                    'text': fragment_text,
+                    'up_votes': 0,
+                    'down_votes': 0,
+                    'age': 0,
+                    'gender': 'male',
+                    'accent': '',
+                    'duration': fragment_audio.duration_seconds
+                }],
+                columns=properties.csv_sample_columns
+            )
+        )
+
+
+def __build_chapter_dataframe(dataframe, sentences, dataset_chapter_index):
+    for syncmap_fragment_index, sentence in enumerate(sentences):
+        trimmed_audio = au.trim_silence(sentence['audio'])
+        __export_dataset_audio_sample(trimmed_audio, dataset_chapter_index, syncmap_fragment_index)
+        dataframe = __append_to_metadata(dataframe,
+                                         dataset_chapter_index,
+                                         syncmap_fragment_index,
+                                         sentence['text'],
+                                         trimmed_audio)
 
     return dataframe
 
 
-def convert_to_training_format(dataframe, chapter_index, sub_index=None):
-    audio_path, syncmap_path = build_file_paths(chapter_index, sub_index)
+def __build_metadata_and_export_audio_samples(dataframe, book_name, book_chapter_index, dataset_chapter_index):
+    chapter_audio = au.load_mp3_audio(book_name, book_chapter_index)
+    syncmap = fu.load_syncmap(book_name, book_chapter_index)
 
-    book = AudioSegment.from_mp3(audio_path)
-    with open(syncmap_path) as f:
-        syncmap = json.loads(f.read())
-
-    sentences = build_syncmap_sentences(book, syncmap)
-    dataframe = build_chapter_dataframe(dataframe, sentences, chapter_index, sub_index)
+    sentences = __build_syncmap_sentences(chapter_audio, syncmap)
+    dataframe = __build_chapter_dataframe(dataframe, sentences, dataset_chapter_index)
 
     return dataframe
+
+
+def __export_metadata(dataframe):
+    dataframe.to_csv(fu.build_dataset_metadata_path(),
+                     sep='|', encoding='utf-8', index=False
+                     )
 
 
 def main():
-    # make directories if they're not present in project tree
-    os.makedirs(properties.dataset_audio_dir, exist_ok=True)
+    os.makedirs(fu.build_dataset_audio_dir(), exist_ok=True)
 
-    metadata_path = os.path.join(properties.dataset_dir, properties.metadata_filename)
-    if os.path.exists(metadata_path):
-        df = pd.read_csv(metadata_path, sep="|", encoding='utf-8')
-    else:
-        df = pd.DataFrame(columns=properties.csv_sample_columns)
+    df = pd.DataFrame(columns=properties.csv_sample_columns)
 
-    for chapter_index in range(1, properties.book_chapter_count + 1):
-        print("Processing chapter %d..." % chapter_index)
-        if not chapter_is_split(chapter_index):
-            df = convert_to_training_format(df, chapter_index)
-        else:
-            df = convert_to_training_format(df, chapter_index, sub_index=1)
-            df = convert_to_training_format(df, chapter_index, sub_index=2)
+    dataset_chapter_index = 1
+    for book in properties.book_list:
+        print("Exporting book \'{:s}\'.".format(book))
+        for book_chapter_index in range(1, properties.chapter_count_in[book] + 1):
+            print("Exporting chapter {:d}...".format(book_chapter_index))
+            df = __build_metadata_and_export_audio_samples(df, book, book_chapter_index, dataset_chapter_index)
+            dataset_chapter_index += 1
 
-    df.to_csv(os.path.join(properties.dataset_dir, properties.metadata_filename), sep='|', encoding='utf-8', index=False)
+    __export_metadata(df)
 
 
 main()

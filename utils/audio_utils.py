@@ -1,39 +1,32 @@
 from pydub import AudioSegment
-import os
-import properties
+from utils import file_utils as fu
 
 
-def __minutes_to_seconds(minutes, seconds):
-    return minutes * 60 + seconds
-    
-    
-def __split_audio_at_mark(audio, split_mark):
-    duration = audio_duration(audio)
-    return audio[0:split_mark*1000], audio[split_mark*1000:duration*1000]
+def load_mp3_audio(book_name, chapter_index):
+    return AudioSegment.from_mp3(fu.build_audio_path(book_name, chapter_index))
 
 
-def load_wav_audio(audio_path):
-    return AudioSegment.from_wav(audio_path)
+def _detect_leading_silence(audio, silence_threshold=-50.0, chunk_size=10):
+    """
+    reference: https://stackoverflow.com/a/29550200
+    audio is a pydub.AudioSegment
+    silence_threshold in dB
+    chunk_size in ms
+
+    iterate over chunks until you find the first one with sound
+    """
+    trim_ms = 0  # ms
+
+    assert chunk_size > 0  # to avoid infinite loop
+    while audio[trim_ms:trim_ms+chunk_size].dBFS < silence_threshold and trim_ms < len(audio):
+        trim_ms += chunk_size
+
+    return trim_ms
 
 
-def load_mp3_audio(audio_path):
-    return AudioSegment.from_mp3(audio_path)
+def trim_silence(audio):
+    start_trim = _detect_leading_silence(audio)
+    end_trim = _detect_leading_silence(audio.reverse())
 
-
-def audio_duration(audio):
-    frames = audio.frame_count()
-    rate = audio.frame_rate
-    return frames / rate
-
-
-def export_audio(audio, index, sub_index=None):
-    if sub_index is None:
-        audio.export(os.path.join(properties.book_audio_dir, properties.audio_filename % (index+1)), format='mp3')
-    else:
-        audio.export(os.path.join(properties.book_audio_dir, properties.audio_sub_filename % (index+1, sub_index)), format='mp3')
-
-
-def split_audio(index, audio):
-    audio_split_mark = properties.audio_split_marks[index+1]
-    split_mark = __minutes_to_seconds(audio_split_mark['minutes'], audio_split_mark['seconds'])
-    return __split_audio_at_mark(audio, split_mark)
+    duration = len(audio)
+    return audio[start_trim:duration-end_trim]

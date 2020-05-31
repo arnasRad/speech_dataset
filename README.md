@@ -29,65 +29,40 @@ speech_dataset is just a tool to help build speech datasets for neural network t
      4. Click on settings icon next to `Text (Plain)` label
      5. Select `Encoding = UTF-8` and click `OK`
      6. Click `Export`
-2. Manually preprocess .txt file using preferred text editor (I'm using Notepad++); see [Regex notes](#Regex-notes)
+2. Manually preprocess .txt file using preferred text editor (I'm using Notepad++)
    1. Remove the book introduction and ending parts
       - text must start with start of chapter 1 and end of the last chapter
    2. Make sure that each paragraph is separated by two new lines `\n\n`
       - replace all triple new lines `\n\n\n` with one new line `\n`
       - in case there are only one new line between paragraphs - replace all `\n\n` with `\n` and then add additional `\n` after each new line in the file
    3. Remove trailing new lines at the start and end of the file
-   4. Check if ebook has any footer explanations
-      - search ebook for `*` symbol.
-      - if footer explanations found - listen to audio at that part and edit the text so that it matches the audio
-   5. there may be foreign language sentences in text that the speaker does not record. Consider manually finding these sentences and edit the text so that it matches audio
-3. preprocess audio files
+   4. Check if ebook has any foot-notes
+      - search ebook for `*` symbol or digits that follow text.
+      - if foot-notes found - listen to audio at that part and edit the text so that it matches the audio
+   5. There may be foreign language sentences in text that the speaker does not record. Consider manually finding these sentences and edit the text so that it matches audio
+   6. Make sure that there are no page numerations left
+   7. Replace all digits with their word representations
+   8. Remove all inaudible abbreviations (usually they're name abbreviations, e.g. replace J. K. Rowling with Rowling)
+   9. Expand audible abbreviations
+   10. Remove page headers and footers if such exists
+3. Preprocess audio files
    1. import audio files to Audacity
    2. trim start of audiobook (book introduction, release date etc.)
    3. trim end of audiobook (ending notes, credits etc.)
    4. trim start of each audio (speaker tells what's the section number)
    5. trim end of each audio (silence trimming)
-4. split ebook to chapters to match audio files' start and end
+   6. export audios in 22050 sample rate
+   7. name each audio file as ***audio-index.mp3***, where index stands for corresponding audio chapter
+4. Split ebook to chapters to match audio files' start and end
    - name each `.txt` file `chapter-index.txt` where `index` is the number of audio matching the text
-5. place the resulting files to their corresponding folders
-   - place text files in `speech_dataset/books/speaker_name/book_name/text/original`
-   - place audio files in `speech_dataset/books/speaker_name/book_name/audio/long`
+5. Place the resulting files to their corresponding folders
+   - place text files in `speech_dataset/books/book_name/text/original`
+   - place audio files in `speech_dataset/books/book_name/audio/long`
 	
-## Semi-automated part
+## Automated part
 
-1. In `properties.py` file: set values for `book_chapter_count` and `book_dir` (relative directory of book containing audio and text files)
-2. Preprocess chapters using `chapter_preprocess.py`
-3. Check the split chapters text and (manually) determine time in audio chapters where split occurs
-4. In `properties.py` file: set `split_book_chapters` (index of chapters that were split) and `audio_split_marks` (time in minutes and seconds that audio should be split on)
-5. Run `audio_preprocess.py` with `export_without_splitting` parameter set to `True`
-6. Check if split audio files match text files. If not - adjust `audio_split_marks` in `properties.py` and repeat step 5 with `export_without_splitting` parameter set to `False`
-7. Preprocess text to `aeneas` text format using `aeneas_preprocess.py`
-8. Manually check the files if there are no lines containing only non-letter symbols; remove if any is found
-9. Force align chapters text and audio using `aeneas_forced_alignment.py`
-   - Calculations may fail at some chapter. In that case - adjust the loop range start with index of chapter that the error occurred on. Loop expression in `main()` method to modify:
-     `for chapter in range(chapter_index, properties.book_chapter_count + 1)`
-10. Export dataset using `export_dataset.py`
-11. (optional). If intending to process further audio books: in `properties.py` - adjust `dataset_last_chapter_index` to append future audiobooks to dataset. ***if not set - dataset will be overwritten by the new book***
-12. Before using the dataset for training - remove headers from `metadata.csv`
-
-## Regex notes
-1. Page break has split a sentence mid-way
-   - *\p{Ll} - unicode lowercase letter that has an uppercase variant*
-   - *\p{L} - unicode letter*
-    ```
-    (\p{L})\n+(\p{Ll})
-    ```
-    ```
-    ([- ])\n+(\p{Ll})
-    ```
-2. Page break has split a word mid-way
-    ```
-    (\p{L})\s*\-\s*(\p{Ll})
-    ```
-3. Year range not separated by whitespaces
-    ```
-    [0-9]{4}\-[0-9]{4}
-   ```
-4. After aeneas preprocessing: line starts with multiple dots
-    ```
-    \n([.]{1,4})\s*([.]{1,4})\s*
-   ```
+1. In `properties.py` file: set values for `book_list` (names of the folders containing book data) and `chapter_count_in` (chapter count of each book).
+2. Force align chapters using `alignment.py`.
+   - Calculations may fail at some chapter. It may be due to operating systems that the programs is running on (Windows users experience this problem more often), poor quality data (text is not an accurate transcription of audio) or that chapter size is too big. Set start_book and start_chapter variable values to ones that the calculations stopped at, restart the script and it should run just fine. If error persists - try splitting the chapters to smaller chunks or cleaning the data.
+   - You can validate alignment results using a simple third-party GUI - [finetuneas](https://github.com/ozdefir/finetuneas).
+3. Export dataset using `export_dataset.py`

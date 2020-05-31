@@ -1,0 +1,19 @@
+dr. - daktaras
+prof. - profesorius
+m. - metai
+a. - amžius
+g. - gatvė
+p. - ponas
+gerb. - gerbiamas
+nr. - numeris
+šv., sv. - švento
+t. t. - taip toliau
+t. y. - tai yra
+pr. Kr. - prieš Kristų
+po Kr. - po Kristaus
+Švč. - švenčiausiosios
+km/val. - kilometrai per valandą
+AG - arklių galios
+st. - sent (saint)
+val. - valanda
+mm - milimetrai
