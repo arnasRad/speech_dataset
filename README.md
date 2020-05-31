@@ -43,7 +43,7 @@ speech_dataset is just a tool to help build speech datasets for neural network t
    6. Make sure that there are no page numerations left
    7. Replace all digits with their word representations
    8. Remove all inaudible abbreviations (usually they're name abbreviations, e.g. replace J. K. Rowling with Rowling)
-   9. Expand audible abbreviations
+   9. Expand audible abbreviations (list of possible abbreviations for Lithuanian language is in abbreviations.txt file)
    10. Remove page headers and footers if such exists
 3. Preprocess audio files
    1. import audio files to Audacity
