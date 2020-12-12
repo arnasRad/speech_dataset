@@ -1,5 +1,5 @@
-from alignment.executetask import ExecuteTask
-from alignment.task import Task
+from aeneas.executetask import ExecuteTask
+from aeneas.task import Task
 
 import properties
 from files import file_utils as fu

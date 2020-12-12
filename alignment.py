@@ -13,8 +13,9 @@ def run():
     # If error persists (can't align a single chapter), consider checking if text has accurate transcription of audio
     #   and if it does - split the chapter to smaller chunks.
     # this error is more likely to occur on Windows OS
-    start_book = "vakarykstis_pasaulis"
-    start_chapter = 38  # chapters range start at index 1
+    start_book = None
+    # start_book = "vakarykstis_pasaulis"
+    start_chapter = 1  # chapters range start at index 1
 
     for current_book in properties.book_list:
         if start_book is not None and start_book != current_book:

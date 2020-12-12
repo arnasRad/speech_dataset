@@ -8,7 +8,12 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 * [Calibre](https://calibre-ebook.com/download) (if ebook format is .epub)
 * [Adobe Acrobat Pro DC](https://get.adobe.com/reader/) (if ebook format is .pdf)
 * [Audacity](https://www.audacityteam.org/download/)
+* [eSpeak](https://www.vultr.com/docs/install-espeak-on-ubuntu-18-04)
+    * sudo apt-get install espeak
 * [Aeneas](https://github.com/readbeyond/aeneas/blob/master/wiki/INSTALL.md)
+    * wget https://raw.githubusercontent.com/readbeyond/aeneas/master/install_dependencies.sh
+    * bash install_dependencies.sh
+    * pip install aeneas
 
 # Steps to creating dataset
 
@@ -56,8 +61,8 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 4. Split ebook to chapters to match audio files' start and end
    - name each `.txt` file `chapter-index.txt` where `index` is the number of audio matching the text
 5. Place the resulting files to their corresponding folders
-   - place text files in `speech_dataset/books/book_name/text/original`
-   - place audio files in `speech_dataset/books/book_name/audio/long`
+   - place text files in `speech_dataset/books/book_name/text`
+   - place audio files in `speech_dataset/books/book_name/audio`
 	
 ## Automated part
 
