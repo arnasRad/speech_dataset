@@ -1,5 +1,6 @@
 from pydub import AudioSegment
-from utils import file_utils as fu
+
+from files import file_utils as fu
 
 
 def load_mp3_audio(book_name, chapter_index):
@@ -18,7 +19,7 @@ def _detect_leading_silence(audio, silence_threshold=-50.0, chunk_size=10):
     trim_ms = 0  # ms
 
     assert chunk_size > 0  # to avoid infinite loop
-    while audio[trim_ms:trim_ms+chunk_size].dBFS < silence_threshold and trim_ms < len(audio):
+    while audio[trim_ms:trim_ms + chunk_size].dBFS < silence_threshold and trim_ms < len(audio):
         trim_ms += chunk_size
 
     return trim_ms
@@ -29,4 +30,4 @@ def trim_silence(audio):
     end_trim = _detect_leading_silence(audio.reverse())
 
     duration = len(audio)
-    return audio[start_trim:duration-end_trim]
+    return audio[start_trim:duration - end_trim]

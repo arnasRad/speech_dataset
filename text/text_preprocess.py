@@ -1,11 +1,11 @@
-import properties
-from utils import file_utils as fu, split_utils as su, replace_utils as ru
-from utils.merge_utils import ShortSentencesMerger
+from files import file_utils as fu
+from text import replace_utils as ru, split_utils as su
+from text.merge_utils import ShortSentencesMerger
 
 
 def __fix_sentences_length(sentences_list):
     # long sentences in a dataset can cause OOM (out of memory) and other errors while training
-    # short sentences are often falsely aligned using aeneas, they're disatvantage while training, too
+    # short sentences are often falsely aligned using alignment, they're disatvantage while training, too
     shorter_sentences_list = su.split_long_sentences(sentences_list)
     return ShortSentencesMerger(shorter_sentences_list).merge_short_sentences()
 

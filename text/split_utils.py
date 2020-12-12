@@ -21,7 +21,8 @@ def __split_sentence_to_valid_length_parts(sentence_parts):
     current_part_index = 0
     current_part = valid_length_parts[current_part_index]
     for part in sentence_parts:
-        current_optimal_part_length = __fold_length_of_strings_in_list(current_part) + __part_length_with_commas(current_part)
+        current_optimal_part_length = __fold_length_of_strings_in_list(current_part) + __part_length_with_commas(
+            current_part)
         if (current_optimal_part_length + len(part)) < properties.max_dataset_sentence_len:
             current_part.append(part)
         else:

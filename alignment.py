@@ -1,12 +1,12 @@
 import os
 
 import properties
-from aeneas import text_preprocess as tp
-from aeneas import forced_alignment as fa
-from utils import file_utils
+from alignment import forced_alignment as fa
+from text import text_preprocess as tp
+from files import file_utils
 
 
-def main():
+def run():
     # If processing a lot of chapters, sometimes calculations finish with error (fail) at some chapter;
     # in that case, simply reset the starting book and chapter index with start_book and start_chapter
     #   that calculations ended with and resume the processing of chapters;
@@ -35,4 +35,5 @@ def main():
             fa.force_align(current_book, chapter_index)
 
 
-main()
+if __name__ == "__main__":
+    run()

@@ -3,8 +3,8 @@ import os
 import pandas as pd
 
 import properties
-from utils import audio_utils as au, file_utils as fu
-
+from audio import audio_utils as au
+from files import file_utils as fu
 
 min_fragment_duration_ms = 400
 
@@ -31,20 +31,20 @@ def __export_dataset_audio_sample(audio_sample, dataset_chapter_index, syncmap_f
 
 def __append_to_metadata(metadata_df, dataset_chapter_index, fragment_index, fragment_text, fragment_audio):
     return metadata_df.append(
-            pd.DataFrame(
-                [{
-                    'filename': fu.build_dataset_audio_filename(dataset_chapter_index, fragment_index),
-                    'text': fragment_text,
-                    'up_votes': 0,
-                    'down_votes': 0,
-                    'age': 0,
-                    'gender': 'male',
-                    'accent': '',
-                    'duration': fragment_audio.duration_seconds
-                }],
-                columns=properties.csv_sample_columns
-            )
+        pd.DataFrame(
+            [{
+                'filename': fu.build_dataset_audio_filename(dataset_chapter_index, fragment_index),
+                'text': fragment_text,
+                'up_votes': 0,
+                'down_votes': 0,
+                'age': 0,
+                'gender': 'male',
+                'accent': '',
+                'duration': fragment_audio.duration_seconds
+            }],
+            columns=properties.csv_sample_columns
         )
+    )
 
 
 def __build_chapter_dataframe(dataframe, sentences, dataset_chapter_index):
@@ -76,7 +76,7 @@ def __export_metadata(dataframe):
                      )
 
 
-def main():
+def run():
     os.makedirs(fu.build_dataset_audio_dir(), exist_ok=True)
 
     df = pd.DataFrame(columns=properties.csv_sample_columns)
@@ -92,4 +92,5 @@ def main():
     __export_metadata(df)
 
 
-main()
+if __name__ == "__main__":
+    run()

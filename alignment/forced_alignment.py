@@ -1,8 +1,8 @@
-from aeneas.executetask import ExecuteTask
-from aeneas.task import Task
+from alignment.executetask import ExecuteTask
+from alignment.task import Task
 
 import properties
-from utils import file_utils as fu
+from files import file_utils as fu
 
 
 def force_align(book_name, chapter_index):
