@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument("--input-dir",
                         default="../books/detektyvas/aeneas_syncmap")
     parser.add_argument("--output-dir",
-                        default="data/syncmaps")
+                        default="data/srt")
     parser.add_argument("--to-srt",
                         type=bool,
                         default=True,
@@ -69,7 +69,7 @@ def seconds_str_to_time(seconds_str):
     minutes = seconds // 60
     seconds = seconds % 60
     milliseconds = int(round(milliseconds * 1000))
-    return datetime.time(hour=hours, minute=minutes, second=seconds, microsecond=milliseconds * 1000)
+    return time(hour=hours, minute=minutes, second=seconds, microsecond=milliseconds * 1000)
 
 
 def format_time(time_str):
