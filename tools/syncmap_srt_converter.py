@@ -33,9 +33,12 @@ def parse_args():
                     + "See https://www.speechpad.com/captions/srt",
     )
     parser.add_argument("--input-dir",
-                        default="../books/detektyvas/aeneas_syncmap")
+                        # default="data/srt")
+                        default="data/tmp")
+                        # default="../books/detektyvas/aeneas_syncmap")
     parser.add_argument("--output-dir",
-                        default="data/srt")
+                        default="data/tmp")
+                        # default="data/syncmaps")
     parser.add_argument("--to-srt",
                         type=bool,
                         default=True,
@@ -98,7 +101,7 @@ def get_files(input_fmt, output_fmt):
 
 
 def syncmap_to_dict(entry: Entry):
-    with open(str(entry.filepath)) as syncmap:
+    with open(str(entry.filepath), encoding='utf-8') as syncmap:
         json_data = json.load(syncmap)
 
     return replace(entry, in_data=json_data['fragments'])
@@ -106,7 +109,7 @@ def syncmap_to_dict(entry: Entry):
 
 def srt_to_dict(entry: Entry):
     srt_data = []
-    with open(str(entry.filepath)) as srt:
+    with open(str(entry.filepath), encoding='utf-8') as srt:
         for idx, time_slice, text, _ in grouper(srt, 4, ''):
             idx = int(idx)
             start, end = time_slice.split(' --> ')
@@ -141,14 +144,14 @@ def calculate_output_data(entry: Entry):
 
 
 def to_srt(entry: Entry):
-    with open(entry.out_path, "w") as str_file:
+    with open(entry.out_path, "w", encoding='utf-8') as str_file:
         for segment in entry.out_data:
             print(f"{segment['id']}\n{segment['start']} --> {segment['end']}\n{segment['text']}\n", file=str_file)
     return entry.filepath
 
 
 def to_syncmap(entry: Entry):
-    with open(entry.out_path, "w") as syncmap_file:
+    with open(entry.out_path, "w", encoding='utf-8') as syncmap_file:
         syncmap = {'fragments': entry.out_data}
         json.dump(syncmap, syncmap_file, indent=2)
     return entry.filepath
