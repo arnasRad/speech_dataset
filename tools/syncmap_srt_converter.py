@@ -30,15 +30,16 @@ class Entry:
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Script to convert aeneas syncmaps in input directory to srt (subtitle) format and vice versa. "
-                    + "See https://www.speechpad.com/captions/srt",
+                    + "See https://www.speechpad.com/captions/srt. "
+                    + "To convert syncmaps to SRT: set --to-srt=True, --input-dir=<input syncmaps directory>, "
+                      + "--output-dir=<output SRT directory>."
+                    + "To convert SRT to syncmaps: set --to-srt=False, --input-dir=<input SRT directory>, "
+                      + "--output-dir=<output syncmaps directory>.",
     )
     parser.add_argument("--input-dir",
-                        # default="data/srt")
                         default="data/tmp")
-                        # default="../books/detektyvas/aeneas_syncmap")
     parser.add_argument("--output-dir",
                         default="data/tmp")
-                        # default="data/syncmaps")
     parser.add_argument("--to-srt",
                         type=bool,
                         default=True,
