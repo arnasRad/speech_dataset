@@ -10,10 +10,28 @@ speech_dataset is just a tool to help build speech datasets for neural network t
 * [Audacity](https://www.audacityteam.org/download/)
 * [eSpeak](https://www.vultr.com/docs/install-espeak-on-ubuntu-18-04)
     * sudo apt-get install espeak
-* [Aeneas](https://github.com/readbeyond/aeneas/blob/master/wiki/INSTALL.md)
-    * wget https://raw.githubusercontent.com/readbeyond/aeneas/master/install_dependencies.sh
-    * bash install_dependencies.sh
-    * pip install aeneas
+
+# Setup environment
+### Anaconda environment:
+```commandline
+conda env create -f environment.yml
+```
+
+### Aeneas
+```commandline
+wget https://raw.githubusercontent.com/readbeyond/aeneas/master/install_dependencies.sh
+bash install_dependencies.sh
+
+git clone https://github.com/ReadBeyond/aeneas.git
+cd aeneas
+sudo pip install -r requirements.txt
+python setup.py build_ext --inplace
+python aeneas_check_setup.py
+```
+If the last command prints a success message, run
+```commandline
+pip install aeneas
+```
 
 # Steps to creating dataset
 
