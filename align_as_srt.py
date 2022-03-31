@@ -136,10 +136,10 @@ if __name__ == "__main__":
     """
     Usage
     - Specify the working directory containing the speech WAV files and TXT files that has corresponding utterances
-     (transcriptions)
+     (transcriptions). The stem (filename without the extension) of WAV and TXT files must be the same.
     - The script aligns all these pairs and outputs both the syncmap JSON and the SRT files
      to the same working directory
-    - Specify `recurse_wdir` to also get the WAV and TXT pairs from the child directories of the working directory 
+    - Specify `recurse_wdir` to also get the WAV and TXT pairs from the child directories of the working directory
     """
     working_dir = "/home/arnas/Downloads/vaiku-balsai/all/tmp1"
     recurse_wdir = False
